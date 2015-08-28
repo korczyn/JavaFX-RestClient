@@ -8,4 +8,5 @@ import com.capgemini.starterkit.javafx.dataprovider.impl.DataProviderImpl;
 public interface DataProvider {
 	DataProvider INSTANCE = new DataProviderImpl();
 	Collection<BookVO> findBookByPrefix(String prefix);
+	Collection<BookVO> findBookByPrefixRest(String prefix) throws Exception;
 }
