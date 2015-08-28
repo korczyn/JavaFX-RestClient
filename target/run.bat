@@ -1,0 +1,1 @@
+java -cp RestClient-0.0.1-SNAPSHOT.jar com.capgemini.starterkit.javafx.Startup

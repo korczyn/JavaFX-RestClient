@@ -1,7 +1,10 @@
 package com.capgemini.starterkit.javafx.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.capgemini.starterkit.javafx.dataprovider.DataProvider;
 import com.capgemini.starterkit.javafx.dataprovider.data.BookVO;
@@ -13,11 +16,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 
 public class RestController {
 
@@ -27,10 +31,10 @@ public class RestController {
 	@FXML TableColumn<BookVO, String> authorsColumn;
 	@FXML TextField prefixField;
 	@FXML Button getBooksButton;
-	@FXML Label idLabel;
-	@FXML Label titleLabel;
-	@FXML Label authorsLabel;
 	@FXML Button requestButton;
+	@FXML TextField titleField;
+	@FXML TextField authorsField;
+	@FXML Button addBookButton;
 
 	private final DataProvider dataProvider = DataProvider.INSTANCE;
 	private BookSearch model = new BookSearch();
@@ -51,7 +55,6 @@ public class RestController {
 			@Override
 			public void changed(ObservableValue<? extends BookVO> observable, BookVO oldValue,
 					BookVO newValue) {
-				setDataOnLabels(newValue.getId(), newValue.getTitle(), newValue.getAuthors());
 
 				Task<Void> backgroundTask = new Task<Void>(){
 
@@ -65,12 +68,6 @@ public class RestController {
 		});
 	}
 
-	private void setDataOnLabels(Long id, String title, String authors){
-		idLabel.setText(String.valueOf(id));
-		titleLabel.setText(title);
-		authorsLabel.setText(authors);
-	}
-
 	@FXML public void getBooksByPrefix() {
 		Collection<BookVO> result = dataProvider.findBookByPrefix(prefixField.getText());
 		model.setResult(new ArrayList<BookVO>(result));
@@ -78,10 +75,22 @@ public class RestController {
 	}
 
 	@FXML public void sendRequestToServer() throws Exception {
-		Collection<BookVO> result = dataProvider.findBookByPrefixRest(prefixField.getText());
-		model.setResult(new ArrayList<BookVO>(result));
-		bookTable.getSortOrder().clear();
+		Task<Collection<BookVO>> backgroundTask = new Task<Collection<BookVO>>() {
+
+			@Override
+			protected Collection<BookVO> call() throws Exception {
+				Collection<BookVO> result = dataProvider.findBookByPrefixRest(prefixField.getText());
+				return result;
+			}
+
+			@Override
+			protected void succeeded(){
+				model.setResult(new ArrayList<BookVO>(getValue()));
+				bookTable.getSortOrder().clear();
+			}
+		};
+		new Thread(backgroundTask).start();
 	}
 
-
+	@FXML public void addBook() {}
 }
