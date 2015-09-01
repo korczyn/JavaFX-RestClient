@@ -3,7 +3,36 @@
 	-fx-font-size: 130.0%;
 }
 
-#bookTable #titleColumn {
-	-fx-alignment: center-right;
-	-fx-background-color: rgb(0,255,64);
+.table-row-cell:selected .text {
+       -fx-fill: steelblue;
+}
+
+.table-view {
+	-fx-background-color: beige;
+}
+
+.table-view .table-row-cell:odd {
+	-fx-background-color: white;
+}
+
+.table-view .table-row-cell:even {
+	-fx-background-color: beige;
+}
+
+.button {
+	-fx-background-color: cornsilk;
+	-fx-border-color: black;
+	-fx-font-weight: bold;
+	-fx-border-style: dotted;
+}
+
+.field {
+	-fx-background-color: burlywood;
+	-fx-border-color: black;
+	-fx-text-fill: black;
+	-fx-prompt-text-fill: gray;
+}
+
+.borderPane {
+	-fx-background-color: beige;
 }

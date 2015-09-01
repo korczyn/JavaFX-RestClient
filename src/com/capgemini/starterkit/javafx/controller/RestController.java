@@ -160,6 +160,7 @@ public class RestController {
 		langs.add("PL");
 		langs.add("RU");
 		langs.add("GR");
+		langs.add("TA");
 
 		Random r = new Random();
 		int randLangIndex = r.nextInt(langs.size());
