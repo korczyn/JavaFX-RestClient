@@ -26,6 +26,10 @@ public class Startup extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("/view/Client.fxml"),
 				ResourceBundle.getBundle("bundle/bundle"));
 		Scene scene = new Scene(root);
+
+		scene.getStylesheets()
+		.add(getClass().getResource("/css/init.css").toExternalForm());
+
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

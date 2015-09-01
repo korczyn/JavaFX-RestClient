@@ -1,6 +1,7 @@
 package com.capgemini.starterkit.javafx.dataprovider.impl;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -20,7 +21,7 @@ public class DataProviderImpl implements DataProvider {
 	private final String USER_AGENT = "Mozilla/5.0";
 	private Collection<BookVO> books = new ArrayList<>();
 
-	public DataProviderImpl(){
+	public DataProviderImpl() {
 		books.add(new BookVO(1L, "pierwsza", "jan koza"));
 		books.add(new BookVO(2L, "druga", "bozena zawadzka"));
 		books.add(new BookVO(3L, "trzecia", "john doe"));
@@ -34,7 +35,7 @@ public class DataProviderImpl implements DataProvider {
 	public Collection<BookVO> findBookByPrefix(String prefix) {
 		Collection<BookVO> result = new ArrayList<BookVO>();
 		for (BookVO bookVO : books) {
-			if(bookVO.getTitle().startsWith(prefix)){
+			if (bookVO.getTitle().startsWith(prefix)) {
 				result.add(bookVO);
 			}
 		}
@@ -42,7 +43,7 @@ public class DataProviderImpl implements DataProvider {
 	}
 
 	@Override
-	public Collection<BookVO> findBookByPrefixRest(String prefix) throws Exception{
+	public Collection<BookVO> findBookByPrefixRest(String prefix) throws Exception {
 		String url = "http://localhost:9721/workshop/rest/books/books-by-title?titlePrefix=" + prefix;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -55,8 +56,7 @@ public class DataProviderImpl implements DataProvider {
 		System.out.println("Sending GET to " + url);
 		System.out.println("Response code " + responseCode);
 
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 
@@ -64,11 +64,12 @@ public class DataProviderImpl implements DataProvider {
 			response.append(inputLine);
 		}
 		in.close();
+		con.disconnect();
 
-		return parseJSON(response.toString());
+		return parseJSONToCollection(response.toString());
 	}
 
-	private Collection<BookVO> parseJSON(String json) throws ParseException{
+	private Collection<BookVO> parseJSONToCollection(String json) throws ParseException {
 		Collection<BookVO> result = new ArrayList<>();
 		JSONParser parser = new JSONParser();
 		Object object = parser.parse(json);
@@ -84,5 +85,83 @@ public class DataProviderImpl implements DataProvider {
 			result.add(new BookVO(id, title, authors));
 		}
 		return result;
+	}
+
+	private BookVO parseJSONToBookVO(String json) throws ParseException{
+		JSONParser parser = new JSONParser();
+		Object object = parser.parse(json);
+		JSONObject o = (JSONObject) object;
+
+		Long id = (Long) o.get("id");
+		String title = (String) o.get("title");
+		String authors = (String) o.get("authors");
+
+		return new BookVO(id, title, authors);
+	}
+
+	@Override
+	public BookVO addBook(String title, String authors) {
+		try {
+			String url = "http://localhost:9721/workshop/rest/books/addBook";
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept", "application/json");
+			con.setDoOutput(true);
+			con.connect();
+
+			JSONObject json = new JSONObject();
+			json.put("title", title);
+			json.put("authors", authors);
+			String input = json.toString();
+
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(input);
+			wr.flush();
+			wr.close();
+
+			int responseCode = con.getResponseCode();
+			System.out.println("Sending POST to " + url);
+			System.out.println("Response code " + responseCode);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			System.out.println(response);
+
+			return parseJSONToBookVO(response.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	@Override
+	public void deleteBook(Long id) {
+		try{
+			String url = "http://localhost:9721/workshop/rest/books/book/" + id;
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setRequestMethod("DELETE");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept", "application/json");
+			con.setDoOutput(true);
+			con.connect();
+
+			int responseCode = con.getResponseCode();
+			System.out.println("Sending DELETE to " + url);
+			System.out.println("Response code " + responseCode);
+
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }

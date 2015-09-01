@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?scenebuilder-stylesheet ../css/init.css?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.capgemini.starterkit.javafx.controller.RestController">
+<AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1000.0" stylesheets="@../css/init.css" xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.capgemini.starterkit.javafx.controller.RestController">
    <children>
-      <SplitPane dividerPositions="0.29797979797979796" layoutX="165.0" layoutY="114.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane dividerPositions="0.29797979797979796" layoutX="165.0" layoutY="114.0" stylesheets="@../css/init.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane SplitPane.resizableWithParent="false">
                <children>
-                  <TableView fx:id="bookTable" layoutX="-25.0" layoutY="14.0" maxWidth="325.0" minWidth="325.0" prefWidth="325.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TableView id=".table" fx:id="bookTable" layoutX="-25.0" layoutY="14.0" maxWidth="325.0" minWidth="325.0" prefWidth="325.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <placeholder><Label text="%label.noContent" /></placeholder>
                     <columns>
                       <TableColumn fx:id="idColumn" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" text="%label.id" />
                       <TableColumn fx:id="titleColumn" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" text="%label.title" />
@@ -24,13 +26,13 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <BorderPane layoutX="80.0" layoutY="50.0" prefHeight="398.0" prefWidth="417.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <BorderPane layoutX="80.0" layoutY="50.0" prefHeight="398.0" prefWidth="417.0" stylesheets="@../css/init.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <bottom>
                         <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                           <buttons>
-                            <Button fx:id="getBooksButton" mnemonicParsing="false" onAction="#getBooksByPrefix" text="%button.booksLocal" />
                               <Button fx:id="requestButton" mnemonicParsing="false" onAction="#sendRequestToServer" text="%button.booksServer" />
                               <TextField fx:id="prefixField" promptText="%field.prefixPlaceholder" />
+                              <Button fx:id="changeLang" mnemonicParsing="false" onAction="#changeLanguage" text="%button.changeLang" />
                           </buttons>
                         </ButtonBar>
                      </bottom>
@@ -46,11 +48,12 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="%label.bookTitle" />
+                              <Label id="labelBookTitle" text="%label.bookTitle" />
                               <Label text="%label.bookAuthors" GridPane.rowIndex="1" />
                               <TextField fx:id="titleField" promptText="%field.bookTitlePlaceholder" GridPane.columnIndex="1" />
                               <TextField fx:id="authorsField" promptText="%field.bookAuthorsPlaceholder" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button fx:id="addBookButton" mnemonicParsing="false" text="%button.addBook" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Button fx:id="addBookButton" mnemonicParsing="false" onAction="#addBook" text="%button.addBook" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Button fx:id="deleteBookButton" mnemonicParsing="false" onAction="#deleteSelectedBook" text="%button.deleteBook" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
                      </top>
