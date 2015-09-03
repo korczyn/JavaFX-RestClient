@@ -28,6 +28,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.MenuButton;
 import javafx.event.ActionEvent;
 
+/*
+ * REV: lepsza nazwa to BookSearchController, ta klasa nie ma pojecia o RESTach
+ */
 public class RestController {
 
 	@FXML
@@ -66,6 +69,9 @@ public class RestController {
 	private void initialize() {
 		initializeResultTable();
 		bookTable.itemsProperty().bind(model.resultProperty());
+		/*
+		 * REV: tutaj zadziala tylko drugi bind, powinienes polaczyc bindy przez 'or'
+		 */
 		addBookButton.disableProperty().bind(titleField.textProperty().isEmpty());
 		addBookButton.disableProperty().bind(authorsField.textProperty().isEmpty());
 		deleteBookButton.disableProperty().bind(bookTable.getSelectionModel().selectedItemProperty().isNull());
@@ -76,6 +82,9 @@ public class RestController {
 		titleColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTitle()));
 		authorsColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getAuthors()));
 
+		/*
+		 * REV: ten listener nic nie robi???
+		 */
 		bookTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<BookVO>() {
 
 			@Override
@@ -93,12 +102,18 @@ public class RestController {
 		});
 	}
 
+	/*
+	 * REV: nazwa powinna mowic co sie dzieje w kliencie, inne metody tez wysylaja request do serwera
+	 */
 	@FXML
 	public void sendRequestToServer() throws Exception {
 		Task<Collection<BookVO>> backgroundTask = new Task<Collection<BookVO>>() {
 
 			@Override
 			protected Collection<BookVO> call() throws Exception {
+				/*
+				 * REV: poprawniej byloby pobrac wartosc z modelu
+				 */
 				Collection<BookVO> result = dataProvider.findBookByPrefixRest(prefixField.getText());
 				return result;
 			}
@@ -124,8 +139,14 @@ public class RestController {
 
 			@Override
 			protected void succeeded() {
+				/*
+				 * REV: poprawniej byloby ustawic wartosci w modelu
+				 */
 				titleField.setText("");
 				authorsField.setText("");
+				/*
+				 * REV: co gdy filtr jest tak ustawiony, ze dodana ksiazka nie powinna sie pojawic?
+				 */
 				bookTable.getItems().add(getValue());
 			}
 		};
@@ -153,6 +174,9 @@ public class RestController {
 
 	@FXML
 	public void changeLanguage() throws IOException {
+		/*
+		 * REV: lista powinna byc stala
+		 */
 		List<String> langs = new ArrayList<String>();
 		langs.add("EN");
 		langs.add("DE");
@@ -162,9 +186,17 @@ public class RestController {
 		langs.add("GR");
 		langs.add("TA");
 
+		/*
+		 * REV: lepiej gdyby uzytkownik decydowal jaki jezyk wybiera :)
+		 */
 		Random r = new Random();
 		int randLangIndex = r.nextInt(langs.size());
 		Locale.setDefault(Locale.forLanguageTag(langs.get(randLangIndex)));
+		/*
+		 * REV: to jest troche niebezpieczne
+		 * FXMLLoader tworzy nowe instancje obiektow zdefiniowanych w fxmlu (w tym tego kontrolera)
+		 * Przy bardziej skomplikowanych konfiguracjach kontroler-model moze to prowadzic do memory leakow.
+		 */
 		anchor.getScene().setRoot(FXMLLoader.load(getClass().getResource("/view/Client.fxml"),
 				ResourceBundle.getBundle("bundle/bundle")));
 	}

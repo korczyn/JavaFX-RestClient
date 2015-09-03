@@ -30,8 +30,10 @@
                      <bottom>
                         <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                           <buttons>
+                              <!-- REV: przycisk akcji powinien byc ponizej lub z prawej strony pola -->
                               <Button fx:id="requestButton" mnemonicParsing="false" onAction="#sendRequestToServer" text="%button.booksServer" />
                               <TextField fx:id="prefixField" promptText="%field.prefixPlaceholder" styleClass="field" />
+                              <!--  REV: ComboBox bylby lepszy -->
                               <Button fx:id="changeLang" mnemonicParsing="false" onAction="#changeLanguage" text="%button.changeLang" />
                           </buttons>
                         </ButtonBar>
