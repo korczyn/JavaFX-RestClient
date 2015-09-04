@@ -28,7 +28,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.MenuButton;
 import javafx.event.ActionEvent;
 
-public class RestController {
+public class BookSearchController {
 
 	@FXML
 	TableView<BookVO> bookTable;
@@ -43,7 +43,7 @@ public class RestController {
 	@FXML
 	Button getBooksButton;
 	@FXML
-	Button requestButton;
+	Button searchButton;
 	@FXML
 	TextField titleField;
 	@FXML
@@ -66,8 +66,7 @@ public class RestController {
 	private void initialize() {
 		initializeResultTable();
 		bookTable.itemsProperty().bind(model.resultProperty());
-		addBookButton.disableProperty().bind(titleField.textProperty().isEmpty());
-		addBookButton.disableProperty().bind(authorsField.textProperty().isEmpty());
+		addBookButton.disableProperty().bind(Bindings.or(titleField.textProperty().isEmpty(), authorsField.textProperty().isEmpty()));
 		deleteBookButton.disableProperty().bind(bookTable.getSelectionModel().selectedItemProperty().isNull());
 	}
 
@@ -75,26 +74,10 @@ public class RestController {
 		idColumn.setCellValueFactory(cellData -> new ReadOnlyLongWrapper(cellData.getValue().getId()));
 		titleColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTitle()));
 		authorsColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getAuthors()));
-
-		bookTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<BookVO>() {
-
-			@Override
-			public void changed(ObservableValue<? extends BookVO> observable, BookVO oldValue, BookVO newValue) {
-
-				Task<Void> backgroundTask = new Task<Void>() {
-
-					@Override
-					protected Void call() throws Exception {
-						return null;
-					}
-				};
-				new Thread(backgroundTask).start();
-			}
-		});
 	}
 
 	@FXML
-	public void sendRequestToServer() throws Exception {
+	public void searchBooksByPrefix() throws Exception {
 		Task<Collection<BookVO>> backgroundTask = new Task<Collection<BookVO>>() {
 
 			@Override
@@ -126,7 +109,10 @@ public class RestController {
 			protected void succeeded() {
 				titleField.setText("");
 				authorsField.setText("");
-				bookTable.getItems().add(getValue());
+				String filter = dataProvider.getCurrentFilter();
+				if(filter.equals("") || getValue().getTitle().startsWith(filter)){
+					bookTable.getItems().add(getValue());
+				}
 			}
 		};
 		new Thread(backgroundTask).start();

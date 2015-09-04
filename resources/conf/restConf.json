@@ -1,0 +1,1 @@
+{"search": "http://localhost:9721/workshop/rest/books/books-by-title?titlePrefix=","add": "http://localhost:9721/workshop/rest/books/addBook","delete": "http://localhost:9721/workshop/rest/books/book/"}
